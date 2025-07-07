@@ -56,7 +56,23 @@ export default function CodeUpload({ onProcess, isLoggedIn, onLoginClick }: Code
       }
 
       const data = await response.json();
-      onProcess(data);
+
+      // Call parser API to parse files
+      const parseResponse = await fetch("/api/parser", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ files: data.files }),
+      });
+
+      if (!parseResponse.ok) {
+        const err = await parseResponse.text();
+        setError("Parsing failed: " + err);
+        setLoading(false);
+        return;
+      }
+
+      const parsedData = await parseResponse.json();
+      onProcess(parsedData);
     } catch (err) {
       setError("Error processing upload.");
     } finally {

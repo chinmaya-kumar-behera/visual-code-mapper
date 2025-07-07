@@ -10,7 +10,8 @@ export function LoginUI({ session }: { session: any }) {
     if (result?.ok && result?.url) {
       // Save token from cookies or session to localStorage/sessionStorage if needed
       // Here we just redirect to the URL
-      window.location.href = result.url;
+      console.log("result object", result);
+      // window.location.href = result.url;
     }
   };
 

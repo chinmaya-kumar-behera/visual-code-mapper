@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp, integer, boolean } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, timestamp, integer, boolean, varchar } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -10,6 +10,34 @@ export const users = pgTable("users", {
   role: text("role").default("user"),
   isGuest: boolean("is_guest").default(false),
   createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const accounts = pgTable("account", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  type: varchar("type", { length: 255 }).notNull(),
+  provider: varchar("provider", { length: 255 }).notNull(),
+  providerAccountId: varchar("provider_account_id", { length: 255 }).notNull(),
+  refreshToken: text("refresh_token"),
+  accessToken: text("access_token"),
+  expiresAt: integer("expires_at"),
+  tokenType: varchar("token_type", { length: 255 }),
+  scope: varchar("scope", { length: 255 }),
+  idToken: text("id_token"),
+  sessionState: varchar("session_state", { length: 255 }),
+});
+
+export const sessions = pgTable("session", {
+  id: serial("id").primaryKey(),
+  sessionToken: varchar("session_token", { length: 255 }).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  expires: timestamp("expires").notNull(),
+});
+
+export const verificationTokens = pgTable("verification_token", {
+  identifier: varchar("identifier", { length: 255 }).notNull(),
+  token: varchar("token", { length: 255 }).notNull(),
+  expires: timestamp("expires").notNull(),
 });
 
 export const projects = pgTable("projects", {
